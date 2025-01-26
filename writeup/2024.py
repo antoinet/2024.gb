@@ -1,6 +1,7 @@
 from pyboy import PyBoy
 from typing import Iterable, Any
 from progress.bar import Bar
+import time
 
 class Emu:
     def __init__(self, rom, turbo=False):
@@ -19,6 +20,7 @@ class Emu:
         for i in range(100):
             self.emu.tick()
 
+        start_time = time.time()
         min_entropy = (100.0, "")
         dbseq = de_bruijn(10, 4)[3:]
         bar = Bar("Processing", max=len(dbseq))
@@ -38,6 +40,8 @@ class Emu:
 
         bar.finish()
         print(f"min_entropy: {min_entropy[0]} for {min_entropy[1]}")
+        end_time = time.time()
+        print(f"Execution time: {end_time-start_time:.4f} seconds")
 
         for c in min_entropy[1]:
             self.move_to(c)
@@ -54,7 +58,7 @@ class Emu:
         self.emu.tick(ticks+1, False)
     
     def tick(self, count=1, render=True):
-        self.emu.tick(count, render)
+        return self.emu.tick(count, render)
     
     def screenshot(self, name):
         image = self.emu.screen.image
